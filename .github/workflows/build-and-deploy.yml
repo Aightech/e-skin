@@ -40,7 +40,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./_site   # The compiled site folder
+          path: docs/_site   # The compiled site folder
           name: github-pages
 
   # 2) Deploy job
