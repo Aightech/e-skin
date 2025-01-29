@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Tutorial | e-skin</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Tutorial" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
+<meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
+<link rel="canonical" href="/tutorial.html" />
+<meta property="og:url" content="/tutorial.html" />
+<meta property="og:site_name" content="e-skin" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Tutorial" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","headline":"Tutorial","url":"/tutorial.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="e-skin" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">e-skin</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/article.html">Summary</a><a class="page-link" href="/">Home</a><a class="page-link" href="/tutorial.html">Tutorial</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Tutorial</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="how-to-make-the-e-skin">How to Make the E-Skin</h1>
+
+<p>This tutorial covers the step-by-step fabrication and assembly process, including a short video demonstration. You’ll need:</p>
+
+<ul>
+  <li><strong>Materials:</strong> Smooth-On Ecoflex or DragonSkin, 3D-printed moulds, force-sensing resistor (FSR) arrays, accelerometers (LIS3DH or similar), flexible PCBs.</li>
+  <li><strong>Tools:</strong> 3D printer, soldering iron, small oven or hot air station (optional), mixing scales.</li>
+</ul>
+
+<p><img src="/assets/img/silicone_mould_fsr.jpg" alt="Silicone mould and FSR arrays" /></p>
+
+<hr />
+
+<h2 id="1-creating-the-silicone-layers">1. Creating the Silicone Layers</h2>
+
+<ol>
+  <li><strong>Print or prepare your mould:</strong> Ensure the internal dimensions accommodate the sensor arrays.</li>
+  <li><strong>Mix silicone:</strong> Follow the manufacturer’s instructions (e.g. 1:1 ratio by weight).</li>
+  <li><strong>Pour a thin base:</strong> This becomes your “outer layer.”</li>
+  <li><strong>Cure:</strong> Let the silicone cure fully (time depends on product, typically 2–4 hours).</li>
+</ol>
+
+<hr />
+
+<h2 id="2-placing-the-sensors">2. Placing the Sensors</h2>
+
+<ol>
+  <li><strong>Position FSR Arrays:</strong> Gently set one 16×16 array onto the partially cured silicone.</li>
+  <li><strong>Add a second thin silicone pour:</strong> This partially encapsulates the first FSR layer.</li>
+  <li><strong>Place the second FSR layer:</strong> Ensure alignment with the first layer.</li>
+  <li><strong>Accelerometer Array:</strong> Lay or mount the small boards near the top side, bridging them to the main PCB.</li>
+</ol>
+
+<p><img src="/assets/img/accelerometer_layer.jpg" alt="Accelerometer layer on flexible PCB" /></p>
+
+<hr />
+
+<h2 id="3-wiring-and-electronics">3. Wiring and Electronics</h2>
+
+<ol>
+  <li><strong>Solder the demultiplexers and ADCs</strong> to a control PCB (or breadboard).</li>
+  <li><strong>Connect the FSR rows/columns</strong> and accelerometer chip-select lines.</li>
+  <li><strong>Use a Teensy 4.1</strong> (or similar) for high-speed acquisition.</li>
+  <li><strong>Check your data rate:</strong> We aim for 800 Hz sampling across all sensors.</li>
+</ol>
+
+<hr />
+
+<h2 id="4-final-encapsulation">4. Final Encapsulation</h2>
+
+<ol>
+  <li><strong>Top Silicone Pour:</strong> Once all sensors are in place, pour the final layer.</li>
+  <li><strong>Degas:</strong> If you have a vacuum chamber, remove air bubbles for a cleaner finish.</li>
+  <li><strong>Cure Thoroughly:</strong> Follow the recommended cure schedule so everything sets properly.</li>
+</ol>
+
+<hr />
+
+<h2 id="video-demonstration">Video Demonstration</h2>
+
+<p>Below is a link to a demonstration video. Click the thumbnail to watch:</p>
+
+<p><a href="https://www.youtube.com/watch?v=VIDEO_ID"><img src="https://img.youtube.com/vi/VIDEO_ID/0.jpg" alt="Video of e-skin build process" /></a></p>
+
+<p><em>(Replace <code class="language-plaintext highlighter-rouge">VIDEO_ID</code> with the actual YouTube video ID.)</em></p>
+
+<hr />
+
+<h2 id="5-testing">5. Testing</h2>
+
+<p>Once built, test the e-skin by pressing or brushing against different objects. If you have a robotic arm, mount the e-skin on the end-effector with a bracket or other fixture, and check real-time data streams from your microcontroller.</p>
+
+<p><strong>We hope you enjoy making your own e-skin!</strong></p>
+
+<p>Feel free to return to our <strong><a href="/">Home page</a></strong> or read the <strong><a href="/article">Project Summary</a></strong>.</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">e-skin</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">e-skin</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
