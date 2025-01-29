@@ -1,5 +1,6 @@
 docs/_site
 docs/_site/*
+docs/Gemfile.lock
 ./docs/.sass-cache
 ./docs/.jekyll-cache
 ./docs/.jekyll-metadata
