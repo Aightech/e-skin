@@ -1,0 +1,41 @@
+name: Build and Deploy Jekyll (docs folder)
+
+on:
+  push:
+    branches: [ "main" ]
+  # You can also uncomment the pull_request line if you'd like to build/test on PRs:
+  # pull_request:
+  #   branches: [ "main" ]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install dependencies
+        run: |
+          cd docs
+          gem install bundler
+          bundle install
+
+      - name: Build site
+        run: |
+          cd docs
+          # Build from the docs folder into a folder called ../_site
+          bundle exec jekyll build --source . --destination ../_site
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # Our built site is now in _site (one level up from docs)
+          publish_dir: _site
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
