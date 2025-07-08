@@ -1,0 +1,9 @@
+{
+  "additionalFiles": "../../..,../..,../..,../..",
+  "compiler.optimization_flags": "",
+  "customBuildProperties": "build.warn_data_percentage=75",
+  "fqbn": "teensy:avr:teensy41",
+  "hardwareFolders": "/home/adev/.arduino15/packages",
+  "otherLibrariesFolders": "/home/adev/Arduino/libraries",
+  "sketchLocation": "/home/adev/dev/IC/fsr_array/src/Eskin"
+}

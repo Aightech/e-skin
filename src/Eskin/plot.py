@@ -33,7 +33,7 @@ class SerialReader(QtCore.QThread):
                 d = self.ser.read(data_len)
                 if len(d) != data_len:
                     continue
-                # dt values (unused here)
+                # timestamps (unused here)
                 _ = int.from_bytes(d[0:4], "little")
                 _ = int.from_bytes(d[4:8], "little")
                 # 16 accelerometer readings, each with 3 values (int16)
@@ -48,7 +48,7 @@ class SerialReader(QtCore.QThread):
     def stop(self):
         self.running = False
         self.wait()
-        if self.ser.is_open:
+        if hasattr(self, 'ser') and self.ser.is_open:
             self.ser.close()
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -59,52 +59,76 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.widget)
         self.widget.opts['distance'] = 40
         
-        # 1D arrays for FSR surfaces (required by GLSurfacePlotItem).
+        # tare variables
+        self.tare_count = 0
+        self.tare_sum0 = np.zeros((16, 16), dtype=np.float64)
+        self.tare_sum1 = np.zeros((16, 16), dtype=np.float64)
+        self.tare_mean0 = None
+        self.tare_mean1 = None
+        
+        # 1D arrays for FSR surfaces
         self.xgrid = np.linspace(0, 15, 16)
         self.ygrid = np.linspace(0, 15, 16)
         
-        # Create FSR surfaces for two layers (16x16 grid each).
-        self.surface_fsr0 = gl.GLSurfacePlotItem(x=self.xgrid, y=self.ygrid, z=np.zeros((16, 16)),
-                                                 shader='shaded', color=(1, 0, 0, 0.5))
+        # Create FSR surfaces for two layers
+        self.surface_fsr0 = gl.GLSurfacePlotItem(
+            x=self.xgrid, y=self.ygrid, z=np.zeros((16, 16)),
+            shader='shaded', color=(1, 0, 0, 0.5))
         self.surface_fsr0.translate(-8, -8, 0)
         self.widget.addItem(self.surface_fsr0)
         
-        self.surface_fsr1 = gl.GLSurfacePlotItem(x=self.xgrid, y=self.ygrid, z=np.zeros((16, 16)),
-                                                 shader='shaded', color=(0, 1, 0, 0.5))
+        self.surface_fsr1 = gl.GLSurfacePlotItem(
+            x=self.xgrid, y=self.ygrid, z=np.zeros((16, 16)),
+            shader='shaded', color=(0, 1, 0, 0.5))
         self.surface_fsr1.translate(-8, -8, 0)
         self.widget.addItem(self.surface_fsr1)
         
-        # Create a scatter plot for the accelerometer data (16 points).
-        # Each dot's position (x, y, z) will represent its acceleration.
-        self.scatter_acc = gl.GLScatterPlotItem(pos=np.zeros((16, 3)), size=10, color=(0, 0, 1, 1))
+        # Scatter plot for accelerometer data
+        self.scatter_acc = gl.GLScatterPlotItem(
+            pos=np.zeros((16, 3)), size=20, color=(0, 0, 1, 1))
         self.widget.addItem(self.scatter_acc)
         
-        # Start the serial reading thread.
+        # Start serial thread
         self.serial_thread = SerialReader(serial_port)
         self.serial_thread.data_received.connect(self.update_data)
         self.serial_thread.start()
         
     def update_data(self, acc, fsr):
-        # Update FSR surfaces.
-        # Assume fsr[:, 0, :] corresponds to layer 0 and fsr[:, 1, :] to layer 1.
-        fsr0 = fsr[:, 0, :].astype(np.float32)/100.+4
-        fsr1 = fsr[:, 1, :].astype(np.float32)/100.
+        raw0 = fsr[:, 0, :].astype(np.float32)
+        raw1 = fsr[:, 1, :].astype(np.float32)
+        
+        # tare phase: first 100 samples
+        if self.tare_mean0 is None:
+            if self.tare_count < 100:
+                self.tare_sum0 += raw0
+                self.tare_sum1 += raw1
+                self.tare_count += 1
+                if self.tare_count == 100:
+                    self.tare_mean0 = self.tare_sum0 / 100.0
+                    self.tare_mean1 = self.tare_sum1 / 100.0
+                    print("Tare complete")
+                return
+        
+        # subtract tare and scale
+        fsr0 = (raw0 - self.tare_mean0) / 100.0 + 4.0
+        fsr1 = (raw1 - self.tare_mean1) / 100.0
+        
+        #set the first column of fsr0 to 0
+        fsr0[:, 6] = (fsr0[:, 5] + fsr0[:, 7]) / 2.0
+        
         self.surface_fsr0.setData(z=fsr0)
         self.surface_fsr1.setData(z=fsr1)
         
-        # Update the accelerometer scatter plot.
-        # Use the accelerometer readings directly as (x, y, z) positions.
-        acc_float = acc.astype(np.float32)/16384.
-
-        lookupArr = [0, 7, 8, 9, 5,  6, 15, 10, 4, 2, 12, 11, 3, 1, 14, 13]
+        # accelerometer scatter
+        acc_float = acc.astype(np.float32) / 16384.0
+        lookupArr = [0,7,8,9,5,6,15,10,4,2,12,11,3,1,14,13]
         acc_float = acc_float[lookupArr]
-        # add grid offset to the x and y axis
         for ix in range(4):
             for iy in range(4):
-                acc_float[ix*4+iy, 0] = acc_float[ix*4+iy, 0] + ix*4 -8
-                acc_float[ix*4+iy, 1] = acc_float[ix*4+iy, 1] + iy*4 -8
-                acc_float[ix*4+iy, 2] = acc_float[ix*4+iy, 2] + 6
-
+                idx = ix*4 + iy
+                acc_float[idx, 0] += ix*4 - 8
+                acc_float[idx, 1] += iy*4 - 8
+                acc_float[idx, 2] += 6
         self.scatter_acc.setData(pos=acc_float)
         
     def closeEvent(self, event):
@@ -112,11 +136,9 @@ class MainWindow(QtWidgets.QMainWindow):
         event.accept()
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print("Usage:")
-        print("\t{} arduino_port n_array".format(sys.argv[0]))
-        print("Ex:")
-        print("\t{} COM5 16".format(sys.argv[0]))
+        print(f"\t{sys.argv[0]} arduino_port")
         sys.exit(1)
         
     app = QtWidgets.QApplication(sys.argv)
