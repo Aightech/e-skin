@@ -1,39 +1,59 @@
+# Whitelist approach: ignore everything at the repo root, then re-include
+# the paths we care about. Blacklist rules at the bottom re-ignore generated
+# and vendored content that would otherwise sneak in under whitelisted subtrees.
+
 /*
+
+# --- tracked top-level files -------------------------------------------------
 !.gitignore
-!/bin
-!/bin/*
-!/bin
-!/script/*
-!/script
-!/src/*
-!/src
-!/include
-!/include/*
-!/lib
-!/lib/*
-!/tool_lib
-!/tool_lib/*
-!/config
-!/config/*
-!/docs
-!/docs/*
-!/fig
-!/fig/*
-!/models
-!/models/*
 !.gitmodules
-!README.org
-!CMakeLists.txt
-!CMakeFunctions.txt
-!CMakeConfig.txt
-!Doxyfile
-!todo.org
-!/.dir-locals.el
-!/README.md
-!/.clang-format
 !/.github
-!/.github/*
-!/LICENSE
+!/CLAUDE.md
 !/CONTRIBUTING.md
-*-backups
-*-backups/*
+!/LICENSE
+!/README.md
+
+# --- tracked top-level directories -------------------------------------------
+!/docs
+!/host
+!/models
+!/script
+!/src
+
+# Recurse into the whitelisted directories (includes dotfiles under them).
+!/.github/**
+!/docs/**
+!/host/**
+!/models/**
+!/script/**
+!/src/**
+
+# --- re-ignore generated / vendored content anywhere in the tree -------------
+
+# Arduino / PlatformIO / CMake build outputs
+**/build/
+**/.pio/
+**/.pioenvs/
+
+# Python virtual environments and caches
+**/venv/
+**/.venv/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# KiCAD autosaves, caches, history and local state
+*-backups/
+**/fp-info-cache
+**/.history/
+*.kicad_prl
+
+# KiCAD generated outputs (board plots & JLCPCB production files).
+# Comment these out if you want to track fabrication artifacts.
+**/plots/
+**/jlcpcb/
+
+# Editor / OS cruft
+.DS_Store
+*.swp
+*~
